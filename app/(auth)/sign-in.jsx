@@ -1,10 +1,11 @@
-import { View, Text, ScrollView, Image } from 'react-native'
+import { View, Text, ScrollView, Image, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { images } from '../../constants'
 import FormField from '../../components/FormField'
 import CustomButton from '../../components/CustomButton'
 import { Link } from 'expo-router'
+import { signIn } from '../../lib/appwrite'
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -14,9 +15,23 @@ const SignIn = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const submit = async () => {
 
-  const submit = () => {
+    if (!form.email || !form.password) {
+      Alert.alert("Sign In Failed.", "Please fill all the details")
+      return;
+    }
 
+    setIsSubmitting(true)
+
+    try {
+      const results = await signIn(form.email, form.password)
+      router.push("/home")
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong, try again later")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -34,7 +49,7 @@ const SignIn = () => {
             title="Email"
             value={form.email}
             otherStyles="mt-7"
-            handleChangeText={(e) => setForm({ ...form, email: e })}
+            handleTextChange={(e) => setForm({ ...form, email: e })}
             keyboardType="email-address"
             placeholder={'Enter your email address'}
           />
@@ -42,7 +57,7 @@ const SignIn = () => {
             title="Password"
             value={form.password}
             otherStyles="mt-7"
-            handleChangeText={(e) => setForm({ ...form, password: e })}
+            handleTextChange={(e) => setForm({ ...form, password: e })}
             placeholder={'Enter your password'}
 
 

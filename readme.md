@@ -1,3 +1,5 @@
-# This app is learning app to help in grasping knowledge on react native. (Crash course)
-# It uses react native file based routing
-# Native wind for styling []
+## This app is learning app to help in grasping knowledge on react native. (Crash course)
+## It uses react native file based routing
+## Native wind for styling []
+
+## The App uses appwrite as the backend server

@@ -1,14 +1,15 @@
-import { View, Text, ScrollView, Image } from 'react-native'
+import { View, Text, ScrollView, Image, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { images } from '../../constants'
 import FormField from '../../components/FormField'
 import CustomButton from '../../components/CustomButton'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
+import { createUser } from '../../lib/appwrite'
 
 const SignUp = () => {
   const [form, setForm] = useState({
-    username:'',
+    username: '',
     email: '',
     password: ''
   })
@@ -16,8 +17,23 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
 
-  const submit = () => {
+  const submit = async () => {
 
+    if (!form.username || !form.email || !form.password) {
+      Alert.alert("Sign Up Failed.", "Please fill all the details")
+      return;
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const results = await createUser(form.email, form.password, form.username)
+      router.push("/home")
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong, try again later")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -34,15 +50,15 @@ const SignUp = () => {
             title="Username"
             value={form.username}
             otherStyles="mt-7"
-            handleChangeText={(e) => setForm({ ...form, username: e })}
+            handleTextChange={(e) => setForm({ ...form, username: e })}
             placeholder={'Enter your username'}
           />
-           
+
           <FormField
             title="Email"
             value={form.email}
             otherStyles="mt-7"
-            handleChangeText={(e) => setForm({ ...form, email: e })}
+            handleTextChange={(e) => setForm({ ...form, email: e })}
             keyboardType="email-address"
             placeholder={'Enter your email address'}
           />
@@ -50,14 +66,14 @@ const SignUp = () => {
             title="Password"
             value={form.password}
             otherStyles="mt-7"
-            handleChangeText={(e) => setForm({ ...form, password: e })}
+            handleTextChange={(e) => setForm({ ...form, password: e })}
             placeholder={'Enter your password'}
 
 
           />
 
           <CustomButton
-            title={'Sign In'}
+            title={'Sign Up'}
             handlePress={submit}
             containerStyles="mt-7"
             isLoading={isSubmitting}
